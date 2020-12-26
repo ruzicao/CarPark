@@ -11,7 +11,6 @@ namespace CarPark.Repository
     public class ManufacturerRepository:IDisposable, IManufacturerRepository
     {
         private ApplicationDbContext db = new ApplicationDbContext();
-
         protected void Dispose(bool disposing)
         {
             if (disposing)
@@ -39,7 +38,5 @@ namespace CarPark.Repository
         {
             return db.Manufacturers.FirstOrDefault(g => g.Id == id);
         }
-
-
     }
 }

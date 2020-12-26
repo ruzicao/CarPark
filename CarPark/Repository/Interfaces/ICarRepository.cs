@@ -11,9 +11,9 @@ namespace CarPark.Repository.Interfaces
     {
         IQueryable<CarDTO> GetAll();
         Car GetById(int id);
-        void Add(Car c);
-        void Update(Car c);
-        void Delete(Car c);
+        void Add(Car car);
+        void Update(Car car);
+        void Delete(Car car);
         IQueryable<CarDTO> GetByManufacturer(int idManufacturer);
     }
 }

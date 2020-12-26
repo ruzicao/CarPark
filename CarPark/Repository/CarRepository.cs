@@ -10,7 +10,7 @@ using System.Web;
 
 namespace CarPark.Repository
 {
-    public class CarRepository: IDisposable, ICarRepository
+    public class CarRepository : IDisposable, ICarRepository
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
@@ -36,8 +36,6 @@ namespace CarPark.Repository
             IQueryable<Car> list = db.Cars.Include(p => p.Manufacturer);
             return list.ProjectTo<CarDTO>();
         }
-
-
 
         public Car GetById(int id)
         {
@@ -70,13 +68,10 @@ namespace CarPark.Repository
             }
         }
 
-
         public IQueryable<CarDTO> GetByManufacturer(int idManufacturer)
         {
-            IQueryable<Car> list = db.Cars.Include(p => p.Manufacturer).Where(m => m.ManufacturerId==idManufacturer).OrderByDescending(y=>y.Year);
+            IQueryable<Car> list = db.Cars.Include(p => p.Manufacturer).Where(m => m.ManufacturerId == idManufacturer).OrderByDescending(y => y.Year);
             return list.ProjectTo<CarDTO>();
         }
-
-
     }
 }

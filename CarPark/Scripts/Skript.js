@@ -8,17 +8,28 @@
     var formAction = "Create";
     var editingId;
 
-   
-    $("body").on("click", "#btnDelete", deleteCar);
-    $("body").on("click", "#btnEdit", editCar);
-    $("body").on("click", "#btn2", refreshForme);
 
-    $("#login").css("display", "none");
-    $("#registration").css("display", "none");
+    dropdownlistdata();
+
+    function dropdownlistdata() {
+        var dropdownUrl = 'https://' + host + manufacturerEndpoint;
+        $.getJSON(dropdownUrl, setDropdown);
+    }
+
 
     $("body").on("click", "#btnkia", dataByManufacturer);
     $("body").on("click", "#btnvolkswagen", dataByManufacturer);
     $("body").on("click", "#btntesla", dataByManufacturer);
+
+
+    $("body").on("click", "#btnDelete", deleteCar);
+    $("body").on("click", "#btnEdit", editCar);
+    $("body").on("click", "#btn2", refreshForme);
+
+
+    $("#login").css("display", "none");
+    $("#registration").css("display", "none");
+
 
     $("#btnreg").click(function () {
         $("#registration").toggle();
@@ -60,7 +71,6 @@
     });
 
 
-
     $("#login").submit(function (e) {
         e.preventDefault();
 
@@ -91,6 +101,7 @@
             alert(data + "Error");
         });
     });
+
 
     $("#btnlogout").click(function () {
         token = null;
@@ -131,6 +142,7 @@
         }
     };
 
+
     function setCars(data, status) {
 
         var $container = $("#datacars");
@@ -142,7 +154,7 @@
             var table = $("<table class='table table-bordered'></table>");
 
             if (token) {
-                var header = $("<thead style=\"background-color: gray;\"><tr><td>Id</td><td>Name</td><td>Year</td><td>Delete</td><td>Edit</td></tr></thead>");
+                var header = $("<thead style=\"background-color: gray;\"><tr><td>Id</td><td>Name</td><td>Year</td><td>Delete</td><td>Edit</td><td>Details</td></tr></thead>");
             } else {
                 var header = $("<thead style=\"background-color: gray;\"><tr><td>Id</td><td>Name</td><td>Year</td></tr></thead>");
             }
@@ -156,8 +168,9 @@
                 var manuID = data[i].ManufacturerId.toString();
                 var displayDelete = "<td><button id=btnDelete value=" + manuID + " name=" + stringId + ">Delete</button></td>";
                 var displayEdit = "<td><button id=btnEdit value=" + manuID + " name=" + stringId + ">Edit</button></td>";
+                var displayDetails = "<td><button id=btnDetails value=" + manuID + " name=" + stringId + ">Details</button></td>";
                 if (token) {
-                    row += displayData + displayDelete + displayEdit + "</tr>";
+                    row += displayData + displayDelete + displayEdit + displayDetails + "</tr>";
                 } else {
                     row += displayData + "</tr>";
                 }
@@ -195,12 +208,40 @@
                 $("#carColor").val(data.Color);
                 $("#carYear").val(data.Year);
                 $("#manufacturer").val(data.ManufacturerId);
+                $("#checkparagraph").css("display","block");
                 editingId = data.Id;
                 formAction = "Update";
             })
             .fail(function (data, status) {
                 formAction = "Create";
                 alert("Error for editing car.");
+            });
+    };
+
+
+    function detailsCar() {
+
+        var detailsId = this.name;
+
+        if (token) {
+            headers.Authorization = 'Bearer ' + token;
+        }
+
+        $.ajax({
+            url: 'https://' + host + carEndpoint + detailsId.toString(),
+            type: "GET",
+            headers: headers
+        })
+            .done(function (data, status) {
+
+                $("#name").val(data.Name);
+                $("#color").val(data.Color);
+                $("#year").val(data.Year);
+                $("#manufac").val(data.Manufacturer.Name);
+                $("#sold").val(data.Buy);
+            })
+            .fail(function (data, status) {
+                alert("Error for car details.");
             });
     };
 
@@ -286,6 +327,7 @@
             });
     };
 
+
     $("#btnlogout").click(function () {
         token = null;
         headers = {};
@@ -294,16 +336,19 @@
 
     });
 
+
     function refreshRegistration() {
         $("#regEmail").val('');
         $("#regLoz").val('');
         $("#regLoz2").val('');
     };
 
+
     function refreshLogin() {
         $("#priEmail").val('');
         $("#priLoz").val('');
     };
+
 
     function refreshButtonsAndTable() {
         $("#btnkia").css('background-color', 'white');
@@ -311,6 +356,7 @@
         $("#btntesla").css('background-color', 'white');
         $("#datacars").empty();
     };
+
 
     function refreshForme() {
         $("#carName").val('');

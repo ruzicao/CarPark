@@ -2,6 +2,39 @@
     @Scripts.Render("~/Scripts/Skript.js") 
 }
 
+<style>
+    #overlay {
+        position: fixed;
+        height: 100%;
+        width: 100%;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background: rgba(0,0,0,0.8);
+        display: none;
+    }
+
+    #popup {
+        max-width: 600px;
+        width: 80%;
+        max-height: 300px;
+        height: 80%;
+        padding: 20px;
+        position: relative;
+        background: #fff;
+        margin: 20px auto;
+    }
+
+    #close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        cursor: pointer;
+        color: #000;
+    }
+</style>
+
 <head>
     <link rel="stylesheet" href="~/Content/Site.css">
 </head>
@@ -64,7 +97,7 @@
                 <br />
                 <p><label>Manufacturer:<select name="" id="manufacturer"></select></label></p>
                 <br />
-                <p><label>Click if this car is bought?<input type="checkbox" value="true" id="ischeck"></label></p>
+                <p id="checkparagraph" style="display:none"><label>Click if this car is sold? <input type="checkbox" value="true" id="ischeck"></label></p>
                 <br />
                 <div class="btn-group" role="group">
                     <button class="btn btn-default" type="submit">Submit</button>
@@ -73,6 +106,15 @@
             </form>
         </div>
         <br />
+
+        <div id="overlay" style="display:none">
+            <div id="popup">
+                <div id="close">X</div>
+                <label><input id="name"></label><label><input id="color"></label><label><input id="year"></label><br/><br/>
+                <label><input id="manufac"></label><label><input id="sold"></label>
+            </div>
+        </div>
+
     </div>
     <br />
     <div style="display:none" class="col-sm-4" id="logout">
