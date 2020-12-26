@@ -8,9 +8,10 @@
     var formAction = "Create";
     var editingId;
 
+   
     $("body").on("click", "#btnDelete", deleteCar);
-
     $("body").on("click", "#btnEdit", editCar);
+    $("body").on("click", "#btn2", refreshForme);
 
     $("#login").css("display", "none");
     $("#registration").css("display", "none");
@@ -109,6 +110,25 @@
         $(this).css("background-color", "gray");
         var requestUri = 'https://' + host + '/api/carsbymanufacturer?id=' + id.toString();
         $.getJSON(requestUri, setCars);
+
+        var dropdownUrl = 'https://' + host + manufacturerEndpoint;
+        $.getJSON(dropdownUrl, setDropdown);
+    };
+
+
+    function setDropdown(data, status) {
+        var manufacturer = $("#manufacturer");
+        manufacturer.empty();
+
+        if (status == "success") {
+            for (i = 0; i < data.length; i++) {
+                var option = "<option value=" + data[i].Id + ">" + data[i].Name + "</option>";
+                manufacturer.append(option);
+            }
+        }
+        else {
+            alert("Error");
+        }
     };
 
     function setCars(data, status) {
@@ -159,8 +179,7 @@
     function editCar() {
 
         var editId = this.name;
-        var manuID = this.value;
-
+       
         if (token) {
             headers.Authorization = 'Bearer ' + token;
         }
@@ -171,14 +190,78 @@
             headers: headers
         })
             .done(function (data, status) {
-                var requestUri = 'https://' + host + '/api/carsbymanufacturer?id=' + manuID.toString();
-                $.getJSON(requestUri, setCars);
+                
+                $("#carName").val(data.Name);
+                $("#carColor").val(data.Color);
+                $("#carYear").val(data.Year);
+                $("#manufacturer").val(data.ManufacturerId);
+                editingId = data.Id;
+                formAction = "Update";
             })
             .fail(function (data, status) {
                 formAction = "Create";
-                alert("Desila se greska!");
+                alert("Error for editing car.");
             });
     };
+
+
+    $("#carForm").submit(function (e) {
+        e.preventDefault();
+
+        if (token) {
+            headers.Authorization = 'Bearer ' + token;
+        }
+
+        var carName = $("#carName").val();
+        var carColor = $("#carColor").val();
+        var carYear = $("#carYear").val();
+        var ischeck = $("#ischeck").val();
+        var manufacturer = $("#manufacturer").val();
+
+        var httpAction;
+        var sendData;
+        var url;
+
+
+        if (formAction === "Create") {
+            httpAction = "POST",
+                url = 'https://' + host + carEndpoint,
+                sendData = {
+                "Name": carName,
+                "Color": carColor,
+                "Year": carYear,
+                "Buy": ischeck,
+                "ManufacturerId": manufacturer
+                };
+        }
+        else {
+            httpAction = "PUT",
+                url = 'https://' + host + carEndpoint + editingId.toString(),
+                sendData = {
+                    "Id": editingId,
+                    "Name": carName,
+                    "Color": carColor,
+                    "Year": carYear,
+                    "Buy": ischeck,
+                    "ManufacturerId": manufacturer
+                };
+        }
+
+        $.ajax({
+            url: url,
+            type: httpAction,
+            headers: headers,
+            data: sendData
+        })
+            .done(function (data, status) {
+                formAction = "Create";
+                refreshForme();
+                alert("Executed action CREATE/UPDATE");
+            })
+            .fail(function (data, status) {
+                alert("Desila se greska!");
+            });
+    });
 
 
     function deleteCar() {
@@ -221,4 +304,11 @@
         $("#datacars").empty();
     };
 
+    function refreshForme() {
+        $("#carName").val('');
+        $("#carColor").val('');
+        $("#carYear").val('');
+        $("#ischecked").val('');
+        $("#datacars").empty();
+    };
 });
