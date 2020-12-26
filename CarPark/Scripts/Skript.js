@@ -286,6 +286,14 @@
             });
     };
 
+    $("#btnlogout").click(function () {
+        token = null;
+        headers = {};
+        $("#formCarDiv").css("display", "none");
+        dataByManufacturer();
+
+    });
+
     function refreshRegistration() {
         $("#regEmail").val('');
         $("#regLoz").val('');
